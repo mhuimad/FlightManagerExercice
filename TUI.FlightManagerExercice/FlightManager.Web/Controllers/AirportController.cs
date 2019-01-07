@@ -7,40 +7,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManager.Web.Controllers
 {
-    [Route("Flight")]
+    [Route("Airport")]
     [ApiController]
-    public class FlightController : Controller
+    public class AirportController : Controller
     {
-        // GET: api/Flight
+        // GET: api/Airport
         [HttpGet]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-        // GET: api/Flight/5
+        // GET: api/Airport/5
         [HttpGet("{id}", Name = "Get")]
         public string Get(int id)
         {
             return "value";
         }
 
-        // POST: api/Flight
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT: api/Flight/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }
