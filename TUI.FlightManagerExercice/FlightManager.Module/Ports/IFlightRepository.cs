@@ -5,8 +5,8 @@ using System.Text;
 
 namespace FlightManager.Module.Ports
 {
-    public interface IAirportRepository
+    public interface IFlightRepository
     {
-        List<Airport> GetAllAirports();
+        void CreateFlight(Flight flight);
     }
 }

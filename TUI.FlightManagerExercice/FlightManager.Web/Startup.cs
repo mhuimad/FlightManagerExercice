@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using FlightManager.Module;
+using FlightManager.Module.Interfaces;
+using FlightManager.Module.Ports;
+using FlightManager.Repository;
+using FlightManager.Repository.Interfaces;
+using FlightManager.Web;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +33,13 @@ namespace WebApplication1
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            // Register Business et DAL class
+            services.AddTransient<IRepositoryConfig, FlightManagerWebConfig>();
+            services.AddTransient<IResourceRepository, ResourceRepository>();
+            services.AddTransient<IResourceModule, ResourceModule>();
+            services.AddTransient<IFlightModule, FlightModule>();
+
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>

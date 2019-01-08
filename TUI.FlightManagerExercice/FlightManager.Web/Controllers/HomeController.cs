@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Models;
 
-namespace WebApplication1.Controllers
+namespace FlightManager.Web.Controllers
 {
     public class HomeController : Controller
     {
