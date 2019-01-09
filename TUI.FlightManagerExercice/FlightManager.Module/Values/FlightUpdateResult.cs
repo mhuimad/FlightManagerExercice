@@ -4,9 +4,8 @@ using System.Text;
 
 namespace FlightManager.Module.Values
 {
-    public class FlightCreationResult : ResultBase
+    public class FlightUpdateResult : ResultBase
     {
-        
-
+       
     }
 }

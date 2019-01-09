@@ -4,7 +4,6 @@ using FlightManager.Module.Ports;
 using FlightManager.Module.Values;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace FlightManager.Module
 {
@@ -12,16 +11,49 @@ namespace FlightManager.Module
     {
 
         private readonly IFlightRepository _flightRepo;
+        private readonly IResourceRepository _resourceRepo;
 
-        public FlightModule(IFlightRepository flightRepo)
+        public FlightModule(IFlightRepository flightRepo, IResourceRepository resourceRepo)
         {
             _flightRepo = flightRepo;
+            _resourceRepo = resourceRepo;
         }
 
         public FlightCreationResult CreateFlight(Flight flight)
         {
             _flightRepo.CreateFlight(flight);
             return new FlightCreationResult() { IsValid = true };
+        }
+
+        public List<Flight> LoadFlights()
+        {
+            var flights = _flightRepo.LoadFlights();
+            foreach (var item in flights)
+            {
+                item.DestinationAirport = _resourceRepo.GetAirportById(item.DestinationAirportId);
+                item.OriginAirport = _resourceRepo.GetAirportById(item.OriginAirportId);
+            }
+            return flights;
+        }
+
+        public FlightUpdateResult UpdateFlight(Flight flight)
+        {
+            _flightRepo.UpdateFlight(flight);
+
+            double distance = CalculateDistance(flight.OriginAirport, flight.DestinationAirport);
+            int fuelQuantity = CalculateFuel(distance, flight.AircraftFuelConsumption);
+
+            return new FlightUpdateResult() { IsValid = true };
+        }
+
+        private int CalculateFuel(double distance, int aircraftFuelConsumption)
+        {
+            throw new NotImplementedException();
+        }
+
+        private double CalculateDistance(Airport originAirport, Airport destinationAirport)
+        {
+            throw new NotImplementedException();
         }
     }
 }

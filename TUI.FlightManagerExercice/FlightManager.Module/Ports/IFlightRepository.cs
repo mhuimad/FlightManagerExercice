@@ -7,6 +7,8 @@ namespace FlightManager.Module.Ports
 {
     public interface IFlightRepository
     {
-        void CreateFlight(Flight flight);
+        int? CreateFlight(Flight flight);
+        List<Flight> LoadFlights();
+        void UpdateFlight(Flight flight);
     }
 }

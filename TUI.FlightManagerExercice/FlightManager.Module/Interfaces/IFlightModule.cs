@@ -9,5 +9,10 @@ namespace FlightManager.Module.Interfaces
     public interface IFlightModule
     {
         FlightCreationResult CreateFlight(Flight flight);
+
+        List<Flight> LoadFlights();
+        FlightUpdateResult UpdateFlight(Flight flight);
+
+
     }
 }

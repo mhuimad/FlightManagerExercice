@@ -11,6 +11,10 @@ namespace FlightManager.Module.Entities
 
         public Airport DestinationAirport { get; set; }
 
+        public int OriginAirportId { get; set; }
+
+        public int DestinationAirportId { get; set; }
+
         public double DistanceInKM { get; set; }
 
         public int AircraftFuelConsumption { get; set; }

@@ -43,7 +43,7 @@ namespace FlightManager.Repository
         {
             using (IDbConnection cx = new SQLiteConnection(_config.ConnectionString))
             {
-                var airports = cx.Query<Airport>(_getAirportByIdSql, id);
+                var airports = cx.Query<Airport>(_getAirportByIdSql, new { AirportId = id });
                 return airports?.SingleOrDefault();
             }
         }
