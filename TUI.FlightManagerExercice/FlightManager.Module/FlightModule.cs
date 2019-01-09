@@ -5,6 +5,7 @@ using FlightManager.Module.Values;
 using System;
 using System.Collections.Generic;
 
+
 namespace FlightManager.Module
 {
     public class FlightModule : IFlightModule
@@ -38,12 +39,14 @@ namespace FlightManager.Module
 
         public FlightUpdateResult UpdateFlight(Flight flight)
         {
-            _flightRepo.UpdateFlight(flight);
 
             double distance = CalculateDistance(flight.OriginAirport, flight.DestinationAirport);
             int fuelQuantity = CalculateFuel(distance, flight.AircraftFuelConsumption);
+            
+            _flightRepo.UpdateFlight(flight);
 
-            return new FlightUpdateResult() { IsValid = true };
+           
+            return new FlightUpdateResult() { IsValid = true, DistanceInKM = distance, Fuel = fuelQuantity };
         }
 
         private int CalculateFuel(double distance, int aircraftFuelConsumption)
