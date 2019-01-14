@@ -1,8 +1,7 @@
-﻿using FlightManager.Module.Entities;
+﻿using FlightManager.Module.Calculator;
+using FlightManager.Module.Entities;
 using FlightManager.Module.Interfaces;
 using FlightManager.Module.Ports;
-using FlightManager.Module.Values;
-using System;
 using System.Collections.Generic;
 
 
@@ -12,51 +11,44 @@ namespace FlightManager.Module
     {
 
         private readonly IFlightRepository _flightRepo;
-        private readonly IResourceRepository _resourceRepo;
+        private readonly FlightCalculator _calculator;
 
-        public FlightModule(IFlightRepository flightRepo, IResourceRepository resourceRepo)
+
+        public FlightModule(IFlightRepository flightRepo)
         {
             _flightRepo = flightRepo;
-            _resourceRepo = resourceRepo;
+            _calculator = new FlightCalculator();
         }
 
-        public FlightCreationResult CreateFlight(Flight flight)
+        public Flight CreateFlight(Flight flight)
         {
             _flightRepo.CreateFlight(flight);
-            return new FlightCreationResult() { IsValid = true };
+            _calculator.ConsolidateFlight(flight);
+            return flight;
         }
 
         public List<Flight> LoadFlights()
         {
             var flights = _flightRepo.LoadFlights();
-            foreach (var item in flights)
-            {
-                item.DestinationAirport = _resourceRepo.GetAirportById(item.DestinationAirportId);
-                item.OriginAirport = _resourceRepo.GetAirportById(item.OriginAirportId);
-            }
+            _calculator.ConsolidateFlights(flights);
             return flights;
         }
 
-        public FlightUpdateResult UpdateFlight(Flight flight)
+        public Flight UpdateFlight(Flight flight)
         {
-
-            double distance = CalculateDistance(flight.OriginAirport, flight.DestinationAirport);
-            int fuelQuantity = CalculateFuel(distance, flight.AircraftFuelConsumption);
-            
             _flightRepo.UpdateFlight(flight);
-
-           
-            return new FlightUpdateResult() { IsValid = true, DistanceInKM = distance, Fuel = fuelQuantity };
+            _calculator.ConsolidateFlight(flight);
+            return flight;
         }
 
-        private int CalculateFuel(double distance, int aircraftFuelConsumption)
+        public Airport GetAirportById(int id)
         {
-            throw new NotImplementedException();
+            return _flightRepo.GetAirportById(id);
         }
 
-        private double CalculateDistance(Airport originAirport, Airport destinationAirport)
+        public List<Airport> LoadAirports()
         {
-            throw new NotImplementedException();
+            return _flightRepo.LoadAirports();
         }
     }
 }

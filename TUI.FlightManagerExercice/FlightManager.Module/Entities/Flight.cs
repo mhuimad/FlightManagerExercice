@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FlightManager.Module.Entities
+﻿namespace FlightManager.Module.Entities
 {
     public class Flight
     {
-        public int FlightId { get; set; }
+        public int FlightId { get; private set; }
         public Airport OriginAirport { get; set; }
 
         public Airport DestinationAirport { get; set; }
@@ -17,8 +13,8 @@ namespace FlightManager.Module.Entities
 
         public double DistanceInKM { get; set; }
 
-        public int AircraftFuelConsumption { get; set; }
+        
 
-        public int Fuel { get; set; }
+        public double AmountOfFuel { get; set; }
     }
 }

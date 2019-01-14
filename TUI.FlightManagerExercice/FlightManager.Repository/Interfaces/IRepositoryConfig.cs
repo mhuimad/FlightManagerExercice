@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FlightManager.Repository.Interfaces
+﻿namespace FlightManager.Repository.Interfaces
 {
     public interface IRepositoryConfig
     {

@@ -2,12 +2,10 @@
 using FlightManager.Module.Entities;
 using FlightManager.Module.Ports;
 using FlightManager.Repository.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
-using System.Text;
 
 namespace FlightManager.Repository
 {
@@ -15,34 +13,42 @@ namespace FlightManager.Repository
     {
         private readonly IRepositoryConfig _config;
 
-        private readonly string _createFlightSql = @"insert into Flight(OriginAirportId, DestinationAirportId,DistanceInKM, AircraftFuelConsumption, Fuel) 
-                                                     values(@OriginAirportId, @DestinationAirportId,@DistanceInKM, @AircraftFuelConsumption, @Fuel); 
+        private readonly string _createFlightSql = @"insert into Flight(OriginAirportId, DestinationAirportId) 
+                                                     values(@OriginAirportId, @DestinationAirportId); 
                                                      SELECT last_insert_rowid();";
 
         private readonly string _updateFlightSql = @"update  Flight
                                                      SET 
 	                                                     OriginAirportId = @OriginAirportId, 
-	                                                     DestinationAirportId = @DestinationAirportId,
-	                                                     DistanceInKM = @DistanceInKM,
-	                                                     AircraftFuelConsumption = @AircraftFuelConsumption,
-	                                                     Fuel   = @Fuel
+	                                                     DestinationAirportId = @DestinationAirportId
                                                      where FlightId = @FlightId";
 
         private readonly string _loadFlightsSql = @"select FlightId
 	                                                    , OriginAirportId
-	                                                    , DestinationAirportId
-	                                                    , DistanceInKM
-	                                                    , AircraftFuelConsumption
-	                                                    , Fuel  
+	                                                    , DestinationAirportId 
                                                     from Flight ";
 
         private readonly string _getFlightByIdSql = @"select FlightId
 	                                                    , OriginAirportId
 	                                                    , DestinationAirportId
-	                                                    , DistanceInKM
-	                                                    , AircraftFuelConsumption
-	                                                    , Fuel  
                                                     from Flight where flightid = @FlightId  ";
+
+        private readonly string _loadAirportsSql = @"SELECT AirportId,	
+                                                            AirportCode,
+                                                            AirportName,
+                                                            CityName,	
+                                                            Latitude,	
+                                                            Longitude
+                                                            FROM Airport ap";
+
+        private readonly string _getAirportByIdSql = @"SELECT AirportId,	
+                                                            AirportCode,
+                                                            AirportName,
+                                                            CityName,	
+                                                            Latitude,	
+                                                            Longitude 
+                                                            FROM Airport ap 
+                                                            WHERE ap.AirportId = @AirportId";
 
 
         public FlightRepository(IRepositoryConfig config)
@@ -50,6 +56,7 @@ namespace FlightManager.Repository
             _config = config;
         }
 
+        #region Flight
         public int? CreateFlight(Flight flight)
         {
             int? flightId = null;
@@ -58,10 +65,7 @@ namespace FlightManager.Repository
                 flightId = cx.ExecuteScalar<int>(_createFlightSql, new
                 {
                     OriginAirportId = flight.OriginAirport.AirportId,
-                    DestinationAirportId = flight.DestinationAirport.AirportId,
-                    flight.DistanceInKM,
-                    flight.AircraftFuelConsumption,
-                    flight.Fuel
+                    DestinationAirportId = flight.DestinationAirport.AirportId
                 });
             }
 
@@ -70,9 +74,14 @@ namespace FlightManager.Repository
 
         public List<Flight> LoadFlights()
         {
-            using (IDbConnection cx = new SQLiteConnection(_config.ConnectionString))
+            using (var cx = new SQLiteConnection(_config.ConnectionString))
             {
                 var flights = cx.Query<Flight>(_loadFlightsSql);
+                foreach (var currentFlight in flights)
+                {
+                    currentFlight.DestinationAirport = GetAirportById(currentFlight.DestinationAirportId);
+                    currentFlight.OriginAirport = GetAirportById(currentFlight.OriginAirportId);
+                }
                 return flights?.ToList();
             }
         }
@@ -80,27 +89,50 @@ namespace FlightManager.Repository
 
         public Flight GetFlightById(int id)
         {
-            using (IDbConnection cx = new SQLiteConnection(_config.ConnectionString))
+            using (var cx = new SQLiteConnection(_config.ConnectionString))
             {
                 var flights = cx.Query<Flight>(_getFlightByIdSql, new { FlightId = id });
                 return flights?.SingleOrDefault();
             }
         }
 
-        public void UpdateFlight(Flight flight)
+        public int UpdateFlight(Flight flight)
         {
+            var numberOfRowsAffected = -1;
             using (var cx = new SQLiteConnection(_config.ConnectionString))
             {
-                cx.Execute(_updateFlightSql, new
+                numberOfRowsAffected = cx.Execute(_updateFlightSql, new
                 {
                     OriginAirportId = flight.OriginAirport.AirportId,
                     DestinationAirportId = flight.DestinationAirport.AirportId,
-                    flight.DistanceInKM,
-                    flight.AircraftFuelConsumption,
-                    flight.Fuel,
                     flight.FlightId
                 });
             }
+
+            return numberOfRowsAffected;
         }
+        #endregion
+
+
+        #region Airport
+        public Airport GetAirportById(int id)
+        {
+            using (IDbConnection cx = new SQLiteConnection(_config.ConnectionString))
+            {
+                var airports = cx.Query<Airport>(_getAirportByIdSql, new { AirportId = id });
+                return airports?.SingleOrDefault();
+            }
+        }
+
+        public List<Airport> LoadAirports()
+        {
+            using (IDbConnection cx = new SQLiteConnection(_config.ConnectionString))
+            {
+
+                var airports = cx.Query<Airport>(_loadAirportsSql);
+                return airports?.ToList();
+            }
+        }
+        #endregion
     }
 }

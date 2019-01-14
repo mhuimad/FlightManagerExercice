@@ -1,7 +1,5 @@
 ﻿using FlightManager.Module.Entities;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace FlightManager.Module.Ports
 {
@@ -9,6 +7,8 @@ namespace FlightManager.Module.Ports
     {
         int? CreateFlight(Flight flight);
         List<Flight> LoadFlights();
-        void UpdateFlight(Flight flight);
+        int UpdateFlight(Flight flight);
+        List<Airport> LoadAirports();
+        Airport GetAirportById(int id);
     }
 }

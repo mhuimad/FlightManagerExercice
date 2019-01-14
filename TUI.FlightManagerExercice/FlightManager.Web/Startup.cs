@@ -37,8 +37,6 @@ namespace WebApplication1
             // Register Business et DAL class
             services.AddTransient<IRepositoryConfig, FlightManagerWebConfig>();
             services.AddTransient<IFlightRepository, FlightRepository>();
-            services.AddTransient<IResourceRepository, ResourceRepository>();
-            services.AddTransient<IResourceModule, ResourceModule>();
             services.AddTransient<IFlightModule, FlightModule>();
 
 
