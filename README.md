@@ -38,6 +38,3 @@ Here we apply the [DDD building blocks](https://dzone.com/articles/ddd-part-ii-d
 Summary:
 1. Entities
 An entity is a plain object that has an identity (ID) and is potentially mutable. Each entity is uniquely identified by an ID rather than by an attribute; therefore, two entities can be considered equal (identifier equality) if both of them have the same ID even though they have different attributes. This means that the state of the entity can be changed anytime, but as long as two entities have the same ID, both are considered equal regardless what attributes they have.
-
-2. Value Objects
-Value objects are immutable. They have no identity (ID) like we found in entity. Two value objects can be considered equal if both of them have the same type and the same attributes (applied to all of its attributes). 
