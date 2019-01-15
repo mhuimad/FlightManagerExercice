@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Linq;
 using FlightManager.Module.Entities;
 using FlightManager.Module.Interfaces;
 using FlightManager.Web.Models;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FlightManager.Web.Controllers
 {
@@ -22,56 +19,82 @@ namespace FlightManager.Web.Controllers
             _flightModule = flightModule;
         }
 
-        // GET: api/Flight
-        [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<FlightViewModel>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(Exception), (int)HttpStatusCode.InternalServerError)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public JsonResult Get()
+
+
+        public IActionResult List()
         {
             var flights = _flightModule.LoadFlights();
             if (flights == null || !flights.Any())
             {
-                return Json(HttpStatusCode.NoContent);
+                return NoContent();
             }
             var result = flights.Select(f => MapEntityToViewModel(f));
-            return Json(result);
+            return View(result);
         }
 
 
 
-
-
-        // POST: api/Flight
-        [HttpPost]
-        [ProducesResponseType(typeof(FlightViewModel), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(Exception), (int)HttpStatusCode.InternalServerError)]
-        public JsonResult Post([FromBody] FlightViewModel flightViewModel)
+        [Route("AddNew")]
+        public ActionResult AddNew()
         {
-            var flight = MapViewModelToEntity(flightViewModel);
+            var airports = _flightModule.LoadAirports();
+            var selectItemList = airports.Select(p => MapToSelectItem(p)).OrderBy(p => p.Text);
+            var model = new FlightViewModel() { OriginAirports = selectItemList, DestinationAirports = selectItemList };
+            return View(model);
+        }
+
+
+
+        [HttpPost]
+        public ActionResult Create([FromForm] FlightViewModel flightViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var flight = MapViewModelToEntity(flightViewModel);
+                if (flight == null)
+                {
+                    return BadRequest();
+                }
+                _flightModule.CreateFlight(flight);
+                return RedirectToAction(nameof(List));
+            }
+
+            return BadRequest();
+        }
+
+
+        [Route("Edit")]
+        public ActionResult Edit(int id)
+        {
+            var airports = _flightModule.LoadAirports();
+            var selectItemList = airports.Select(p => MapToSelectItem(p)).OrderBy(p => p.Text);
+            var flight = _flightModule.GetFlightById(id);
             if (flight == null)
             {
-                return Json(HttpStatusCode.BadRequest);
+                return NotFound();
             }
-            var response = _flightModule.CreateFlight(flight);
-            return Json(MapEntityToViewModel(response));
+            var model = MapEntityToViewModel(flight);
+            model.OriginAirports = selectItemList;
+            model.DestinationAirports = selectItemList;
+            return View(model);
         }
 
 
 
         // PUT: api/Flight
-        [HttpPut]
-        [ProducesResponseType(typeof(FlightViewModel), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(Exception), (int)HttpStatusCode.InternalServerError)]
-        public JsonResult Put(FlightViewModel flightViewModel)
+        [HttpPost]
+        [Route("Update")]
+        public ActionResult Update([FromForm]FlightViewModel flightViewModel)
         {
             var flight = MapViewModelToEntity(flightViewModel);
-            if (flight == null)
+            
+            if (_flightModule.GetFlightById(flight.FlightId) == null)
             {
-                return Json(HttpStatusCode.BadRequest);
+                BadRequest();
             }
-            var response = _flightModule.UpdateFlight(flight);
-            return Json(MapEntityToViewModel(response));
+            _flightModule.UpdateFlight(flight);
+            return RedirectToAction(nameof(List));
+
         }
 
 
@@ -97,11 +120,19 @@ namespace FlightManager.Web.Controllers
             return new FlightViewModel()
             {
                 FlightId = flight.FlightId,
+                DestinationAirportId = flight.DestinationAirportId,
                 DestinationAirport = flight.DestinationAirport.AirportName,
+                OriginAirportId = flight.OriginAirportId,
                 OriginAirport = flight.OriginAirport.AirportName,
                 DistanceInKM = flight.DistanceInKM,
                 Fuel = flight.AmountOfFuel
             };
         }
+
+        private SelectListItem MapToSelectItem(Airport airport)
+        {
+            return new SelectListItem((airport.CityName + " || " + airport.AirportName), airport.AirportId.ToString());
+        }
+
     }
 }

@@ -50,5 +50,10 @@ namespace FlightManager.Module
         {
             return _flightRepo.LoadAirports();
         }
+
+        public Flight GetFlightById(int flightId)
+        {
+            return _flightRepo.GetFlightById(flightId); 
+        }
     }
 }

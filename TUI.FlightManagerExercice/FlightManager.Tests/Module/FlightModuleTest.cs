@@ -56,7 +56,16 @@ namespace FlightManager.Tests.Module
             Assert.AreEqual(expectedFlightCount, flights.Count);
         }
 
-        
+        [TestMethod]
+        public void ShouldGetSingleFlight()
+        {
+            var dummyFlight = FakeData.GetFlightBetweenCasaParis();
+            _flightRepoMoq.Setup(s => s.GetFlightById(It.IsAny<int>())).Returns(() => dummyFlight);
+            var module = new FlightModule(_flightRepoMoq.Object);
+            var flight = module.GetFlightById(It.IsAny<int>());
+            Assert.IsNotNull(flight);
+        }
+
 
         [TestMethod]
         public void ShouldCalculateDistanceBetwenTwoAirportsWhenGetFlight()

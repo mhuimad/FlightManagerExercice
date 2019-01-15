@@ -7,6 +7,7 @@ namespace FlightManager.Module.Ports
     {
         int? CreateFlight(Flight flight);
         List<Flight> LoadFlights();
+        Flight GetFlightById(int id);
         int UpdateFlight(Flight flight);
         List<Airport> LoadAirports();
         Airport GetAirportById(int id);

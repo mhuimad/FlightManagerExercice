@@ -34,7 +34,7 @@ namespace WebApplication1
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // Register Business et DAL class
+            // Register Dependencies 
             services.AddTransient<IRepositoryConfig, FlightManagerWebConfig>();
             services.AddTransient<IFlightRepository, FlightRepository>();
             services.AddTransient<IFlightModule, FlightModule>();

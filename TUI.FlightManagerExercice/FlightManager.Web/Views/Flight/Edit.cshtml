@@ -1,0 +1,39 @@
+﻿@model FlightManager.Web.Models.FlightViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<h4>FlightViewModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Update">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="FlightId" />
+            <div class="form-group">
+                <label asp-for="OriginAirport" class="control-label"></label>
+                @Html.DropDownListFor(@model => @model.OriginAirportId, Model.OriginAirports)
+                <span asp-validation-for="OriginAirport" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DestinationAirport" class="control-label"></label>
+                @Html.DropDownListFor(@model => @model.DestinationAirportId, Model.DestinationAirports)
+                <span asp-validation-for="DestinationAirport" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

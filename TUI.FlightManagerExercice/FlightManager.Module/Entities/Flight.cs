@@ -2,7 +2,7 @@
 {
     public class Flight
     {
-        public int FlightId { get; private set; }
+        public int FlightId { get; set; }
         public Airport OriginAirport { get; set; }
 
         public Airport DestinationAirport { get; set; }
@@ -13,7 +13,7 @@
 
         public double DistanceInKM { get; set; }
 
-        
+
 
         public double AmountOfFuel { get; set; }
     }

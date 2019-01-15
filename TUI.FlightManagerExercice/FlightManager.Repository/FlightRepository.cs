@@ -13,27 +13,28 @@ namespace FlightManager.Repository
     {
         private readonly IRepositoryConfig _config;
 
-        private readonly string _createFlightSql = @"insert into Flight(OriginAirportId, DestinationAirportId) 
+        #region Queries
+        private const string _createFlightSql = @"insert into Flight(OriginAirportId, DestinationAirportId) 
                                                      values(@OriginAirportId, @DestinationAirportId); 
                                                      SELECT last_insert_rowid();";
 
-        private readonly string _updateFlightSql = @"update  Flight
+        private const string _updateFlightSql = @"update  Flight
                                                      SET 
 	                                                     OriginAirportId = @OriginAirportId, 
 	                                                     DestinationAirportId = @DestinationAirportId
                                                      where FlightId = @FlightId";
 
-        private readonly string _loadFlightsSql = @"select FlightId
+        private const string _loadFlightsSql = @"select FlightId
 	                                                    , OriginAirportId
 	                                                    , DestinationAirportId 
                                                     from Flight ";
 
-        private readonly string _getFlightByIdSql = @"select FlightId
+        private const string _getFlightByIdSql = @"select FlightId
 	                                                    , OriginAirportId
 	                                                    , DestinationAirportId
                                                     from Flight where flightid = @FlightId  ";
 
-        private readonly string _loadAirportsSql = @"SELECT AirportId,	
+        private const string _loadAirportsSql = @"SELECT AirportId,	
                                                             AirportCode,
                                                             AirportName,
                                                             CityName,	
@@ -41,7 +42,7 @@ namespace FlightManager.Repository
                                                             Longitude
                                                             FROM Airport ap";
 
-        private readonly string _getAirportByIdSql = @"SELECT AirportId,	
+        private const string _getAirportByIdSql = @"SELECT AirportId,	
                                                             AirportCode,
                                                             AirportName,
                                                             CityName,	
@@ -50,6 +51,7 @@ namespace FlightManager.Repository
                                                             FROM Airport ap 
                                                             WHERE ap.AirportId = @AirportId";
 
+        #endregion
 
         public FlightRepository(IRepositoryConfig config)
         {
@@ -91,8 +93,10 @@ namespace FlightManager.Repository
         {
             using (var cx = new SQLiteConnection(_config.ConnectionString))
             {
-                var flights = cx.Query<Flight>(_getFlightByIdSql, new { FlightId = id });
-                return flights?.SingleOrDefault();
+                var flight = cx.Query<Flight>(_getFlightByIdSql, new { FlightId = id }).SingleOrDefault();
+                flight.DestinationAirport = GetAirportById(flight.DestinationAirportId);
+                flight.OriginAirport = GetAirportById(flight.OriginAirportId);
+                return flight;
             }
         }
 

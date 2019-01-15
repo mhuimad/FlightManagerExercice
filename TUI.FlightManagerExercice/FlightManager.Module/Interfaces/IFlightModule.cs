@@ -11,7 +11,6 @@ namespace FlightManager.Module.Interfaces
         Flight UpdateFlight(Flight flight);
         Airport GetAirportById(int id);
         List<Airport> LoadAirports();
-
-
+        Flight GetFlightById(int flightId);
     }
 }
